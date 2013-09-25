@@ -53,8 +53,15 @@ class Upload extends AbstractUpload
         
         $fileInfo = $file->getFileInfo();
         
+        // armazena os caminhos dos arquivos que fizeram upload para remover em caso de erros
+        $tempDirUpload = array();
+        
+        // retorno com o nome do arquivo enviados
+        $return = array();
+        
         foreach ($fileInfo as $id => $item)
         {
+            // se for um array renomeia separadamente os arquivos
             if (is_array($this->rename))
             {
                 if (array_key_exists($id, $this->rename))
@@ -63,10 +70,12 @@ class Upload extends AbstractUpload
                     $file->setFilters(array('Rename' => $newName), $id);
                 }
             } 
+            // se retornar true renomeia o arquivo com um hash
             elseif ($this->rename)
             {
                 $newName = md5(microtime()) . "." . substr(strrchr($item['name'],'.'), 1);
                 $file->setFilters(array('Rename' => $newName));
+            // se for null fica a imagem com o nome normal
             } else {
                 $newName = $item['name'];
             }
@@ -75,7 +84,7 @@ class Upload extends AbstractUpload
             $destination = is_array($this->destination) ? $this->path . $this->destination[$id] : $this->path . $this->destination;
             if (!is_dir($destination))
                 mkdir($destination);
-            chmod($destination, "0000");
+            chmod($destination, "0775");
             $file->setDestination($destination, $id);
             
             // verifica se tem validação de tamanho se tiver aplica
@@ -100,6 +109,12 @@ class Upload extends AbstractUpload
                 // envia o arquivo
                 if ($file->receive($id))
                 {
+                    // seta o destino do arquivo
+                    $tempDirUpload[] = $destination . "/" . $newName;
+                    
+                    // seta o nome do arquivo
+                    $return['files'][$id] = $newName;
+                    
                     // verifica se tem destino thumb se tiver gera a thumb
                     if ($this->thumbOpt !== null)
                     {
@@ -117,35 +132,33 @@ class Upload extends AbstractUpload
                         /*
                          * Criando a thumb usando o modulo JVEasyPhpThumbnail
                         */
-                        //$destination = $destination . "/" . "1.jpg";
                         $phpThumb = new PHPThumb();
                         $phpThumb->Thumblocation = $this->path . $this->thumbOpt['destination'] . "/";
                         $phpThumb->Chmodlevel = '0755';
                         $phpThumb->Thumbsaveas = substr(strrchr($item['name'],'.'), 1);
-                        //$phpThumb->Thumbsize = 300;
                         $phpThumb->Thumbwidth = $this->thumbOpt['width'];
                         $phpThumb->Thumbheight = $this->thumbOpt['height'];
                         $phpThumb->Cropimage = $this->thumbOpt['cropimage'];
                         
-                        //$destination = $this->path . $this->thumbOpt['destination'] . "/" . $newName;
-                        $phpThumb->Createthumb($destination . "/" . $newName, 'file');
-                        
+                        $destination = $destination . "/" . $newName;
+                        $phpThumb->Createthumb($destination, 'file');
                     }
-                    
                 } 
             } else {
-                echo "<pre>";
-                exit(print_r($file->getMessages()));
-                echo "</pre>";
+                $keyError = $file->getErrors();
+                
+                // verifica se fez algum upload se tiver exclui os arquivos, mas caso o required esteja setado como true
+                if (count($tempDirUpload) && ($this->required && in_array('fileUploadErrorNoFile', $keyError)) || (!in_array('fileUploadErrorNoFile', $keyError)))
+                {
+                    foreach ($tempDirUpload as $filename)
+                        unlink($filename);
+                }
+                
+                if (($this->required && in_array('fileUploadErrorNoFile', $keyError)) || (!in_array('fileUploadErrorNoFile', $keyError)))
+                    return array('error' => array($id => $file->getMessages()));
             }
         }
         
-        
-        
-        // verifica se precisa dar um rename no arquivo
-        
-        echo "<pre>";
-        exit(print_r($file->getFilters()));
-        echo "</pre>";
+        return $return;
     }
 }

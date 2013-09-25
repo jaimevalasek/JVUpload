@@ -17,6 +17,7 @@ interface UploadInterface
     public function setExtValidation($extValidation);
     public function setDestination($destination);
     public function setPath($path);
+    public function setOptions(array $options);
     
     public function prepareTypes();
 }

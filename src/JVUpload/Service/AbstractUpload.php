@@ -1,10 +1,18 @@
 <?php
+/**
+ * 
+ * @author Jaime Marcelo Valasek
+ * @category Upload
+ * @license MIT
+ * @package JVUpload
+ *
+ */
 
 namespace JVUpload\Service;
 
-use JVMimeTypes\Service\MimeTypes;
-
-use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\ServiceManager\ServiceLocatorInterface,
+    JVMimeTypes\Service\MimeTypes,
+    Zend\Config\Config;
 
 abstract class AbstractUpload implements UploadInterface
 {
@@ -21,21 +29,42 @@ abstract class AbstractUpload implements UploadInterface
     protected $destination;
     protected $thumbOpt;
     protected $exceptCode = 3;
+    protected $required = false;
     
+    /**
+     * Construtor que seta o a variável sm e path
+     *  
+     * @param ServiceLocatorInterface $serviceLocator
+     */
     public function __construct(ServiceLocatorInterface $serviceLocator) {
         $request = $serviceLocator->get('request');
         $this->sm = $serviceLocator;
         $this->path = $request->getServer('DOCUMENT_ROOT');
     }
     
+    /**
+     * Retorna o service de serviceLocator
+     * 
+     * @return ServiceLocatorInterface
+     */
     public function getServiceLocator() {
         return $this->sm;
     }
     
+    /**
+     * Retorna o config do serviceLocator
+     * 
+     * @return array
+     */
     public function getConfig() {
         return $this->getServiceLocator()->get('config');
     }
     
+    /**
+     * Retorna uma lista de array contendo todos os mime types
+     *  
+     * @return array
+     */
     public function getConfigMimeTypes()
     {
         if ($this->configMimeTypes === null) {
@@ -45,6 +74,11 @@ abstract class AbstractUpload implements UploadInterface
         return $this->configMimeTypes;
     }
     
+    /**
+     * Retorna uma lista de array de mime types custom
+     * 
+     * @return array
+     */
     public function getConfigMimeTypesCustom()
     {
         if ($this->configMimeTypes === null) {
@@ -65,9 +99,9 @@ abstract class AbstractUpload implements UploadInterface
     
     /**
      * @param string|array $rename
-     * @return \JVUpload\Service\Upload
+     * @return $this
      */
-    public function setRename($rename = null) {
+    public function setRename($rename = true) {
         $this->rename = $rename;
         
         return $this;
@@ -75,7 +109,7 @@ abstract class AbstractUpload implements UploadInterface
     
     /**
      * @param string $separator
-     * @return \JVUpload\Service\Upload
+     * @return $this
      */
     public function setNameToSlug($separator = '_')
     {
@@ -86,7 +120,7 @@ abstract class AbstractUpload implements UploadInterface
     
     /**
      * @param string $type
-     * @return \JVUpload\Service\Upload
+     * @return $this
      */
     public function setType($type)
     {
@@ -103,7 +137,7 @@ abstract class AbstractUpload implements UploadInterface
     
     /**
      * @param array $sizeValidation forAll: array(min, max) | forEach: array('file1' => array(min, max), 'file2' => array(min, max))     
-     * @return \JVUpload\Service\Upload
+     * @return $this
      */
     public function setSizeValidation(array $sizeValidation)
     {
@@ -151,7 +185,7 @@ abstract class AbstractUpload implements UploadInterface
     
     /**
      * @param string|array $extValidation forAll: array('perfilext') | forEach: array('file1' => 'perfilext1', 'file2' => 'perfilext2')
-     * @return \JVUpload\Service\Upload
+     * @return $this
      */
     public function setExtValidation($extValidation)
     {
@@ -183,6 +217,12 @@ abstract class AbstractUpload implements UploadInterface
         return $this;
     }
     
+    /**
+     * Define o destino do upload do arquivo
+     * 
+     * @param string $destination
+     * @return $this;
+     */
     public function setDestination($destination) {
         $this->destination = $destination;
         
@@ -211,6 +251,25 @@ abstract class AbstractUpload implements UploadInterface
      */
     public function setPath($path) {
         $this->path = $path;
+        
+        return $this;
+    }
+    
+    /**
+     * Passar o nome das opções dentro de um array, opções disponíveis são array('required')
+     * 
+     * @param array $options
+     * @return $this;
+     */
+    public function setOptions(array $options)
+    {
+        if (count($options)) 
+        {
+            foreach ($options as $opt) {
+                if ($opt == 'required')
+                    $this->required = true;
+            }
+        }
         
         return $this;
     }
