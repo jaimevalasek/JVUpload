@@ -27,7 +27,7 @@ abstract class AbstractUpload implements UploadInterface
     protected $sizeValidation;
     protected $extValidation;
     protected $destination;
-    protected $thumbOpt;
+    protected $thumbOpt = array();
     protected $exceptCode = 3;
     protected $required = false;
     
@@ -237,7 +237,7 @@ abstract class AbstractUpload implements UploadInterface
      * @return $this
      */
     public function setThumb(array $thumbOpt) {
-        $this->thumbOpt = $thumbOpt;
+        $this->thumbOpt = count($thumbOpt) ? $thumbOpt : array();
         
         return $this;
     }
@@ -319,7 +319,7 @@ abstract class AbstractUpload implements UploadInterface
         
         // se o tipo for image pode gerar também a thumb se estiver setado
         if ($this->type != 'image') {
-            $this->setThumb(false);
+            $this->setThumb(array());
         }
     }
 }

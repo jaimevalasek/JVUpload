@@ -1,0 +1,31 @@
+{
+    "name": "jaimevalasek/jv-upload",
+    "description": "A generic Upload files module for ZF2.",
+    "license": "BSD-3-Clause",
+    "type": "library",
+    "keywords": [
+        "zf2"
+    ],
+    "homepage": "https://github.com/jaimevalasek/JVUpload",
+    "authors": [
+        {
+            "name": "Jaime Marcelo Valasek",
+            "email": "jaime.valasek@gmail.com",
+            "homepage": "http://valasek.com.br"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "zendframework/zendframework": "2.*",
+		"jaimevalasek/jv-easy-php-thumb": "dev-master",
+		"jaimevalasek/jv-mime-types": "dev-master"
+    },    
+    "autoload": {
+        "psr-0": {
+            "JVUpload": "src/"
+        },
+        "classmap": [
+            "./Module.php"
+        ]
+    }
+}

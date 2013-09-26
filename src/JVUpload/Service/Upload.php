@@ -24,7 +24,7 @@ class Upload extends AbstractUpload
         
         // verifica se o tipo de envio é imagem e se precisa gerar miniatura
         if ($this->thumbOpt !== null && $this->type != 'image')
-            $this->setThumb(false);
+            $this->setThumb(array());
         
         return $this;
     }
@@ -87,12 +87,15 @@ class Upload extends AbstractUpload
             chmod($destination, "0775");
             $file->setDestination($destination, $id);
             
+            // validações
+            $arrValidators = array();
+            
             // verifica se tem validação de tamanho se tiver aplica
             if ($this->sizeValidation !== null)
             {
                 $size = isset($this->sizeValidation[$id]) ? $this->sizeValidation[$id] : $this->sizeValidation;
                 $sizeValidation = new Size(array('min' => $size[0], 'max' => $size[1]));
-                $file->setValidators(array($sizeValidation), $id);
+                $arrValidators[] = $sizeValidation;
             }
             
             // verifica se tem validação de extensão se tiver aplica
@@ -100,7 +103,12 @@ class Upload extends AbstractUpload
             {
                 $ext = isset($this->extValidation[$id]) ? $this->extValidation[$id] : $this->extValidation;
                 $extValidation = new Extension($ext);
-                $file->setValidators(array($extValidation), $id);
+                $arrValidators[] = $extValidation;
+            }
+
+            // setando as validações caso existam
+            if (count($arrValidators)) {
+                $file->setValidators($arrValidators, $id);
             }
             
             // valida o arquivo
@@ -116,7 +124,7 @@ class Upload extends AbstractUpload
                     $return['files'][$id] = $newName;
                     
                     // verifica se tem destino thumb se tiver gera a thumb
-                    if ($this->thumbOpt !== null)
+                    if (count($this->thumbOpt))
                     {
                         // setando os opções obrigatórias
                         $arrThumbOptRequire = array('destination' => 'destination', 'width' => 'width', 'height' => 'height', 'cropimage' => 'cropimage');
