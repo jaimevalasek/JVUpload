@@ -12,12 +12,39 @@ Download this module into your vendor folder.
 
 After done the above steps, open the file `config/application.config.php`. And add the module with the name `JVUpload`.
 
-Pendencies modules
------
+### Pendencies modules
+ 
  - To use the module you must also install the following modules:
  
 JVEasyPhpThumbnail - https://github.com/jaimevalasek/JVEasyPhpThumbnail
 JVMimeTypes - https://github.com/jaimevalasek/JVMimeTypes
+
+### With composer
+
+1. Add this project and JVEasyPhpThumbnail + JVMimeTypes in your composer.json:
+
+`"require": {
+    "jaimevalasek/jv-upload": "dev-master"
+}`
+
+2. Now tell composer to download JVUpload by running the command:
+
+`php composer.phar update`
+
+### Post installation
+
+1.Enabling it in your `application.config.php`.
+
+`<?php
+return array(
+    'modules' => array(
+        // ...
+        'JVEasyPhpThumbnail',
+        'JVMimeTypes',
+        'JVUpload',
+    ),
+    // ...
+);`
 
 Using the JVUpload
 -----
