@@ -16,42 +16,63 @@ After done the above steps, open the file `config/application.config.php`. And a
  
  - To use the module you must also install the following modules:
  
+JVConfig - https://github.com/jaimevalasek/JVConfig
 JVEasyPhpThumbnail - https://github.com/jaimevalasek/JVEasyPhpThumbnail
 JVMimeTypes - https://github.com/jaimevalasek/JVMimeTypes
 
 ### With composer
 
-1. Add this project and JVEasyPhpThumbnail + JVMimeTypes in your composer.json:
+1. Add this project and JVEasyPhpThumbnail + JVMimeTypes + JVConfig in your composer.json:
 
-`"require": {
+```php
+"require": {
     "jaimevalasek/jv-upload": "dev-master"
-}`
+}
+```
 
 2. Now tell composer to download JVUpload by running the command:
 
-`php composer.phar update`
+```php php composer.phar update```
 
 ### Post installation
 
 1.Enabling it in your `application.config.php`.
 
-`<?php
+```php
+<?php
 return array(
     'modules' => array(
         // ...
+        'JVConfig',
         'JVEasyPhpThumbnail',
         'JVMimeTypes',
         'JVUpload',
     ),
     // ...
-);`
+);
+```
+
+2. Configure the array configuration module JVConfig or in your main module
+
+```php
+<?php
+return array(
+	// ...
+	'jv-upload' => array(
+	    'types' => array(
+	        'image', 'audio', 'video', 'app', 'thumb', 'text', 'file', 'custom'
+	    ),
+	),
+	// ...
+);
+```
 
 Using the JVUpload
 -----
 
-```php
+### Basic image example
 
-// Basic image example
+```php
 $upload = new \JVUpload\Service\Upload($this->getServiceLocator()->get('servicemanager'));
 $upload->setType('image')
     ->setThumb(array('destination' => '/conteudos/thumbs', 'width' => 200, 'height' => 250, 'cropimage' => array(2,0,40,40,50,50)))
@@ -59,5 +80,4 @@ $upload->setType('image')
     ->setSizeValidation(array('18', '200')) // validation of the file size in KB array (min max).
     ->setDestination('/conteudos/imagens')
     ->prepare()->execute();
-    
 ```
