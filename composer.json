@@ -19,7 +19,8 @@
         "zendframework/zendframework": "2.*",
 		"jaimevalasek/jv-easy-php-thumbnail": "dev-master",
 		"jaimevalasek/jv-mime-types": "dev-master"
-    },    
+    },
+    "minimum-stability": "dev",
     "autoload": {
         "psr-0": {
             "JVUpload": "src/"
