@@ -17,9 +17,8 @@
     "require": {
         "php": ">=5.3.3",
         "zendframework/zendframework": "2.*",
-		"jaimevalasek/jv-easy-php-thumb": "dev-master",
-		"jaimevalasek/jv-mime-types": "dev-master",
-		"jaimevalasek/jv-config": "dev-master"
+		"jaimevalasek/jv-easy-php-thumbnail": "dev-master",
+		"jaimevalasek/jv-mime-types": "dev-master"
     },    
     "autoload": {
         "psr-0": {
